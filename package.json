@@ -1,0 +1,11 @@
+{
+  "name": "complaint-management-system",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/dev.js",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:client": "npm --prefix client run dev",
+    "start:backend": "npm --prefix backend start",
+    "seed": "npm --prefix backend run seed"
+  }
+}

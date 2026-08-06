@@ -70,8 +70,23 @@ app.use('/api/reports', reportRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT) || 5000;
+const MAX_PORT_ATTEMPTS = 20;
 
-app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-});
+const startServer = (port, attempt = 1) => {
+  const server = app.listen(port, '0.0.0.0', () => {
+    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${port}`);
+  });
+
+  server.on('error', (error) => {
+    if (error.code === 'EADDRINUSE' && attempt < MAX_PORT_ATTEMPTS) {
+      console.warn(`Port ${port} is busy. Trying ${port + 1}...`);
+      server.close(() => startServer(port + 1, attempt + 1));
+    } else {
+      console.error(error);
+      process.exit(1);
+    }
+  });
+};
+
+startServer(PORT);
